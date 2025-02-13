@@ -8,18 +8,11 @@
 // sou responsável por todas  as eventuais cópias deste programa e que não distribui nem facilitei a 
 //distribuição de cópias.
 
-####################################### Implementação da Mochila ########################################################
+##########################################################################################################################################
 
-#Dado um conjunto Cn de n itens, representado por Cn = {1,2,…,n} em que cada i e cn tem um peso pi e 
-#utilidade ui(pi>0 ui>0). desejamos determinar um subconjunto S dos itens, tal que a soma dos pesos dos elementos 
-#de S seja menor ou igual à capacidade da mochila L e que a utilidade total dos elementos S seja a maior possível.
-
-#########################################################################################################################
-
-
-
-# Este código implementa a solução do problema da Mochila (Knapsack) usando programação dinâmica.
-# A função 'knapsack' calcula o valor máximo que pode ser obtido com um conjunto de itens e uma capacidade máxima de mochila.
+# Este código implementa a solução do problema da Mochila (Knapsack) usando programação dinâmica com espaço linear.
+# A função 'knapsack_linear_space' calcula o valor máximo que pode ser obtido com um conjunto de itens e uma capacidade máxima de mochila.
+# Essa implementação utiliza uma versão otimizada do algoritmo de Mochila com uma tabela unidimensional (reduzindo o espaço utilizado).
 # O tempo de execução do algoritmo é calculado e impresso.
 # O código também inclui a leitura de instâncias do problema a partir de arquivos de entrada, e para cada instância, executa o algoritmo de Mochila.
 # As instâncias de entrada estão localizadas nas pastas 'low-dimensional' e 'large-scale'.
@@ -28,21 +21,19 @@
 
 import time
 
-def knapsack(items, L):
+def knapsack_linear_space(items, L):
     start_time = time.time()
     n = len(items)
-    # Cria a tabela de programação dinâmica para armazenar os resultados parciais
-    dp = [[0] * (L + 1) for _ in range(n + 1)]
-    
-    for i in range(1, n + 1):
-        for w in range(L + 1):
-            if items[i - 1][0] <= w:
-                dp[i][w] = max(dp[i - 1][w], dp[i - 1][w - items[i - 1][0]] + items[i - 1][1])
-            else:
-                dp[i][w] = dp[i - 1][w]
-    
+    # Cria uma tabela unidimensonal para armazenar os resultados parciais
+    dp = [0] * (L + 1)
+
+    # Preenche a tabela de programação dinâmica (com espaço otimizado)
+    for i in range(n):
+        for w in range(L, items[i][0] - 1, -1):  # Preenche de trás para frente para evitar sobrescrever resultados
+            dp[w] = max(dp[w], dp[w - items[i][0]] + items[i][1])
+
     print(f"Tempo Final: {(time.time() - start_time)}\n Capacidade: {L} Quantidade de itens: {n}")
-    return dp[n][L]
+    return dp[L]
 
 
 def read_knapsack_instance(filename):
@@ -74,7 +65,7 @@ for i in range(len(low_dimensional)):
     items, L = read_knapsack_instance(filename)
 
     print("Arquivo:", filename)
-    result = knapsack(items, L)
+    result = knapsack_linear_space(items, L)
     print("MAX:", result)
 
 
@@ -84,5 +75,6 @@ for i in range(len(large_scale)):
     items, L = read_knapsack_instance(filename)
 
     print("Arquivo:", filename)
-    result = knapsack(items, L)
+    result = knapsack_linear_space(items, L)
     print("MAX:", result)
+
